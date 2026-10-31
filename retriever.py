@@ -10,6 +10,7 @@ from langchain_core.runnables import RunnableLambda
 from langchain_core.documents import Document
 
 from config import CHROMA_DIR
+from vector_store import ensure_vector_store
 
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -19,11 +20,7 @@ def build_retriever(
     k_tickets: int = 3,
     k_guides: int = 3,
 ) -> RunnableLambda:
-    if not CHROMA_DIR.exists():
-        raise FileNotFoundError(
-            "The Chroma vector store is missing. Run ingest_faq.py, "
-            "ingest_tickets.py, and ingest_pdf.py first."
-        )
+    ensure_vector_store()
 
     embeddings = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 

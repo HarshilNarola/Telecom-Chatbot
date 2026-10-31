@@ -28,6 +28,7 @@ rag-telecom-chatbot/
 ├── main.py             # CLI entry point
 ├── rag_chain.py        # Builds the LangChain RAG chain
 ├── retriever.py        # Merges the three Chroma retrievers
+├── vector_store.py     # Builds missing Chroma collections automatically
 ├── config.py           # Validates secrets and defines project paths
 ├── ingest_faq.py       # Loads data/faq.csv → Chroma 'faq' collection
 ├── ingest_tickets.py   # Loads data/tickets.db → Chroma 'tickets' collection
@@ -90,7 +91,9 @@ python ingest_pdf.py
 ```
 
 Each script embeds the source data and persists it to `chroma_store/`. Re-run a script only when its source data changes.
-The vector store is generated locally and is intentionally ignored by Git.
+The vector store is generated locally and is intentionally ignored by Git. When
+the app starts and the collections are missing, it automatically builds them
+from the committed files in `data/`.
 
 ## Running the App
 
@@ -113,10 +116,9 @@ GROQ_API_KEY = "your_groq_api_key"
 HF_TOKEN = "your_huggingface_token"
 ```
 
-4. Ensure the generated `chroma_store/` is available to the deployment. The
-   current setup creates it from the source files with the ingestion commands
-   above, so either commit the generated store for a small demo or add a
-   deployment step that runs all three ingestion scripts before the app starts.
+4. The app automatically creates the missing `chroma_store/` collections from
+   the committed files in `data/` on first use. The first request may take a
+   few minutes while the embedding model downloads and documents are indexed.
 
 Never put secrets in `app.py`, `rag_chain.py`, `.env.example`, or GitHub.
 
